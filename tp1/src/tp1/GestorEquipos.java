@@ -8,14 +8,46 @@ import javax.swing.JOptionPane;
 
 public class GestorEquipos {
 	private LinkedList<Equipo> equipos = new LinkedList<Equipo>();
+	private LinkedList<Partido> partidos = new LinkedList<Partido>();
+	private LinkedList<Equipo> semifinalistas = new  LinkedList<Equipo> ();
+	private LinkedList<Equipo> finalistas = new  LinkedList<Equipo> ();
+
+	public GestorEquipos() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public LinkedList<Equipo> getSemifinalistas() {
+		return semifinalistas;
+	}
+
+
+	public void setSemifinalistas(LinkedList<Equipo> semifinalistas) {
+		this.semifinalistas = semifinalistas;
+	}
+
+
+	public LinkedList<Equipo> getFinalistas() {
+		return finalistas;
+	}
+
+
+	public void setFinalistas(LinkedList<Equipo> finalistas) {
+		this.finalistas = finalistas;
+	}
+
+
+	public LinkedList<Partido> getPartidos() {
+		return partidos;
+	}
+
+	public void setPartidos(LinkedList<Partido> partidos) {
+		this.partidos = partidos;
+	}
 
 	public GestorEquipos(LinkedList<Equipo> equipos) {
 		this.equipos = equipos;
 	}
 
-	public GestorEquipos() {
-		// TODO Auto-generated constructor stub
-	}
 
 	public LinkedList<Equipo> getEquipos() {
 		return equipos;
@@ -73,7 +105,7 @@ public class GestorEquipos {
 //		return periodo.getYears();
 //	}
 
-	public Equipo jugarPartido(Equipo equipo1, Equipo equipo2) {
+	public Partido jugarPartido(Equipo equipo1, Equipo equipo2) {
 		// QUE NO SEAN EL MISMO EQUIPO
 		if (equipo1.equals(equipo2)) {
 			JOptionPane.showMessageDialog(null, "Los equipos deben ser diferentes");
@@ -98,17 +130,17 @@ public class GestorEquipos {
 		}
 		// CREAMOS LOS GOLES RANDOM
 
-		int golesEquipo1Ida = (int) (Math.random() * 10);
-		int golesEquipo2Ida = (int) (Math.random() * 10);
-		int golesEquipo1Vuelta = (int) (Math.random() * 10);
-		int golesEquipo2Vuelta = (int) (Math.random() * 10);
+		int golesEquipo1Ida = (int) (Math.random() * 5);
+		int golesEquipo2Ida = (int) (Math.random() * 5);
+		int golesEquipo1Vuelta = (int) (Math.random() * 5);
+		int golesEquipo2Vuelta = (int) (Math.random() * 5);
 
 		int totalGolesE1 = golesEquipo1Ida + golesEquipo1Vuelta;
 		int totalGolesE2 = golesEquipo2Ida + golesEquipo2Vuelta;
 		if (totalGolesE1 > totalGolesE2) {
-			return equipo1;
+			return new Partido(equipo1, equipo2, totalGolesE1, totalGolesE2);
 		} else if (totalGolesE2 > totalGolesE1) {
-			return equipo2;
+			return new Partido(equipo1, equipo2, totalGolesE1, totalGolesE2);
 		} else {
 			JOptionPane.showMessageDialog(null, "Hay penales");
 			int golesPenalesEquipo1 = 0;
@@ -124,30 +156,47 @@ public class GestorEquipos {
 				}
 				// Verificamos quien gano
 				if (golesPenalesEquipo1 > golesPenalesEquipo2) {
-					return equipo1;
+					return new Partido(equipo1, equipo2, golesPenalesEquipo1, golesPenalesEquipo2);
 				} else if (golesPenalesEquipo1 < golesPenalesEquipo2) {
-					return equipo2;
+					return new Partido(equipo1, equipo2, golesPenalesEquipo1, golesPenalesEquipo2);
 				}
 			} while (golesPenalesEquipo1 == golesPenalesEquipo2 && golesPenalesEquipo1 < 3 && golesPenalesEquipo2 < 3);
 
 			if (totalGolesE1 > totalGolesE2) {
-				return equipo1;
+				return new Partido(equipo1, equipo2, totalGolesE1, totalGolesE2);
 			} else {
-				return equipo2;
+				return new Partido(equipo1, equipo2, totalGolesE1, totalGolesE2);
 			}
 		}
 
 	}
 
-	public int seleccionarEquipo(LinkedList<Equipo> equipos) {
+	public Equipo seleccionarEquipo(LinkedList<Equipo> equipos) {
 		String[] equiposarray = new String[equipos.size()];
 		for (int i = 0; i < equipos.size(); i++) {
 			equiposarray[i] = equipos.get(i).getNombre();
 		}
-		int opcion = JOptionPane.showOptionDialog(null, "Seleccione equipo", null, 0, 0, null, equiposarray,
-				equiposarray[0]);
-
-		return opcion;
-
+		int opcion = JOptionPane.showOptionDialog(null, 
+				"Seleccione equipo", null, 0, 0, null, equiposarray, equiposarray[0]);
+		Equipo seleccionado = equipos.get(opcion);
+		equipos.remove(opcion);
+		return seleccionado;
 	}
+	
+	public void rellenarEquipos(GestorEquipos gestor) {
+		for (Equipo equipo : gestor.getEquipos()) {
+			equipo.agregarJugadoresRandom(23);
+		}
+	}
+	public Equipo elegirEquipo(LinkedList<Equipo> equipos) {
+		String[] equiposarray = new String[equipos.size()];
+		for (int i = 0; i < equipos.size(); i++) {
+			equiposarray[i] = equipos.get(i).getNombre();
+		}
+		int opcion = JOptionPane.showOptionDialog(null, 
+				"Seleccione equipo", null, 0, 0, null, equiposarray, equiposarray[0]);
+		Equipo seleccionado = equipos.get(opcion);	
+		return seleccionado;
+	}
+	
 }

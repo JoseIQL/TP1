@@ -51,14 +51,30 @@ public class Equipo {
 	}
 
 	public void agregarJugador() {
-		String nombre, ciudad;
+		String nombre, posicion;
 		int ncamiseta, edad;
 		nombre = JOptionPane.showInputDialog("Ingrese nombre");
-		ciudad = JOptionPane.showInputDialog("Ingrese ciudad");
-		ncamiseta = Integer.parseInt(JOptionPane.showInputDialog("Ingrese número de camiseta"));
-		edad = Integer.parseInt(JOptionPane.showInputDialog("Ingrese edad"));
-		Jugador agregado = new Jugador(nombre, ciudad, ncamiseta, edad);
+		while (nombre.trim().isEmpty()) {
+			nombre=JOptionPane.showInputDialog("Por favor, ingrese su nombre");
+		}
+		posicion = JOptionPane.showInputDialog("Ingrese la posicion");
+		while (posicion.trim().isEmpty()) {
+			posicion=JOptionPane.showInputDialog("Por favor, ingrese la posicion del jugador");
+		}
+		String incamiseta = JOptionPane.showInputDialog("Ingrese un número de camiseta");
+		while (incamiseta.trim().isEmpty() || Integer.parseInt(incamiseta) <=0) {
+			incamiseta = JOptionPane.showInputDialog("Por favor, ingrese un número válido para su camiseta");
+		}
+		String iedad = JOptionPane.showInputDialog("Ingrese la edad");
+		while (iedad.trim().isEmpty() || Integer.parseInt(iedad)<=15) {
+			iedad = JOptionPane.showInputDialog("Por favor, ingrese una edad válida, la edad minima es de 16 años");
+		}
+		ncamiseta=Integer.parseInt(incamiseta);
+		edad=Integer.parseInt(iedad);
+		Jugador agregado = new Jugador(nombre, posicion, ncamiseta, edad);
 		jugadores.add(agregado);
+		JOptionPane.showMessageDialog(null, "el jugador "+ nombre + " fue agregado");
+		
 	}
 
 	public void eliminarJugador(String nombre) {
@@ -102,24 +118,21 @@ public class Equipo {
 	}
 
 	public void agregarJugadoresRandom(int cant) {
-
-		for (int i = 0; i < cant; i++) {
-			boolean flag = true;
-			do {
-				int camiseta = (int) (Math.random() * 99 + 1);
-
-				for (Jugador jugador : this.getJugadores()) {
-					if (jugador.getNumeroCamiseta() == camiseta) {
-						flag = false;
+		
+			for (int i = 0; i < cant; i++) {
+				boolean flag = true;
+				do {
+					int camiseta = (int) (Math.random() * 99 + 1);
+					for (Jugador jugador : this.getJugadores()) {
+						if (jugador.getNumeroCamiseta() == camiseta) {
+							flag = false;
+						}
 					}
-
-				}
-				this.getJugadores().add(new Jugador("X", "Y", camiseta, 18));
-				break;
-			} while (flag == false);
-
-		}
-
+					this.getJugadores().add(new Jugador("X", "Y", camiseta, 18));
+					break;
+				} while (flag == false);
+			}
+			//JOptionPane.showMessageDialog(null, "La cantidad de: "+ cant + " jugadores fueron creados");
 	}
 
 }

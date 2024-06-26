@@ -11,45 +11,82 @@ public class Main {
 		Equipo Ferro = new Equipo("Ferro", "Caballito");
 		nuevo.agregarEquipo(Ferro);
 		nuevo.agregarEquipo(Velez);
-		Velez.agregarJugadoresRandom(15);
-		Ferro.agregarJugadoresRandom(15);
+		nuevo.getEquipos().add(new Equipo("Talleres","Cordoba"));
+		nuevo.getEquipos().add(new Equipo("Boca","La boca"));
+		nuevo.getEquipos().add(new Equipo("River","Nuñez"));
+		nuevo.getEquipos().add(new Equipo("Lanus","Lanus"));
+		nuevo.getEquipos().add(new Equipo("Chacarita","Chacarita"));
+		nuevo.getEquipos().add(new Equipo("Newells","Rosario"));
+		//Velez.agregarJugadoresRandom(15);
+		//Ferro.agregarJugadoresRandom(15);
 
+		nuevo.rellenarEquipos(nuevo);
 		// JOptionPane.showMessageDialog(null, Velez.listaJugadores());
 
-		String[] opciones = { "Jugar partido", "Seleccionar Equipo", "Eliminar equipo", "Salir" };
+		String[] opciones = { "Jugar partido", "Seleccionar Equipo", "Eliminar equipo", "Revisar partidos", "Ver fases","Salir" };
 		int opcion = 0;
 		do {
-			opcion = JOptionPane.showOptionDialog(null, "Bienvenido al Gestor de Equipos", null, opcion, opcion, null, opciones,
+			opcion = JOptionPane.showOptionDialog(null, "Bienvenido al Gestor de Equipos", null, 0, 0, null, opciones,
 					opciones[0]);
 
 			switch (opcion) {
 			case 0:
-				JOptionPane.showMessageDialog(null, "El ganador es: " + nuevo.jugarPartido(Velez, Ferro));
+				if (Partido.getCantPartidos()<4) {
+					Partido jugado = nuevo.jugarPartido(
+							nuevo.seleccionarEquipo(nuevo.getEquipos()), 
+							nuevo.seleccionarEquipo(nuevo.getEquipos()));
+					JOptionPane.showMessageDialog(null,"Se jugo el partido " + jugado);
+					JOptionPane.showMessageDialog(null,"El ganador fue: " + jugado.determinarGanador());
+					nuevo.getSemifinalistas().add(jugado.determinarGanador());
+					nuevo.getPartidos().add(jugado);
+					
+				} else if (Partido.getCantPartidos()>=4 && Partido.getCantPartidos()<6){
+					Partido jugado = nuevo.jugarPartido(
+							nuevo.seleccionarEquipo(nuevo.getSemifinalistas()), 
+							nuevo.seleccionarEquipo(nuevo.getSemifinalistas()));
+					JOptionPane.showMessageDialog(null,"Se jugo el partido " + jugado);
+					JOptionPane.showMessageDialog(null,"El ganador fue: " + jugado.determinarGanador());
+					nuevo.getFinalistas().add(jugado.determinarGanador());
+					nuevo.getPartidos().add(jugado);
+				}else if (Partido.getCantPartidos()==6) {
+					Partido jugado = nuevo.jugarPartido(nuevo.getFinalistas().get(0),nuevo.getFinalistas().get(1));
+					JOptionPane.showMessageDialog(null,"Se jugo el partido " + jugado);
+					JOptionPane.showMessageDialog(null,"El ganador del torneo fue: " + jugado.determinarGanador());
+					nuevo.getPartidos().add(jugado);
+				} else {
+					JOptionPane.showMessageDialog(null, "Finalizo el torneo");
+				}
+				
 				break;
 			case 1:
-				int seleccionado = nuevo.seleccionarEquipo(nuevo.getEquipos());
+				Equipo seleccionado = nuevo.elegirEquipo(nuevo.getEquipos());
 
 				String[] opcionesDeEquipo = { "Crear jugador", "Buscar Jugador",
 						"Rellenar equipo random", "Ver equipo", "Volver al menú principal" };
 				int opcionEquipo = 0;
 				do {
 					opcionEquipo = JOptionPane.showOptionDialog(null, "Que desea hacer en el equipo: ", null,
-							seleccionado, opcionEquipo, null, opcionesDeEquipo, opcionesDeEquipo[0]);
+							0, 0, null, opcionesDeEquipo, opcionesDeEquipo[0]);
 					switch (opcionEquipo) {
 					case 0:
-						nuevo.getEquipos().get(seleccionado).agregarJugador();
-						;
+						seleccionado.agregarJugador();
 						break;
 					case 1:
 						String nombre = JOptionPane.showInputDialog("Ingrese el nombre del jugador que quiere buscar");
-						nuevo.getEquipos().get(seleccionado).buscarNombreJugador(nombre);
+						seleccionado.buscarNombreJugador(nombre);
 						break;
 					case 2:
-						int cantidad = Integer.parseInt(JOptionPane.showInputDialog("Indique la cantidad de jugadores a crear"));
-						nuevo.getEquipos().get(seleccionado).agregarJugadoresRandom(cantidad);
+						int cantidad;
+						String numero = JOptionPane.showInputDialog("Ingrese cantidad de jugadores");
+				        while (numero.trim().isEmpty() || Integer.parseInt(numero) <= 0) {
+				            numero = JOptionPane.showInputDialog("Por favor, ingrese un número válido");
+				        }
+				        cantidad=Integer.parseInt(numero);
+						
+						seleccionado.agregarJugadoresRandom(cantidad);
 						break;
 					case 3:
-						JOptionPane.showMessageDialog(null, nuevo.getEquipos().get(seleccionado));
+						JOptionPane.showMessageDialog(null, seleccionado);
 						break;
 					case 4:
 						JOptionPane.showMessageDialog(null, "Esta regresando al menú principal");
@@ -62,16 +99,42 @@ public class Main {
 
 			case 2:
 				String club = JOptionPane.showInputDialog("Ingrese el nombre del equipo a borrar");
+				while (club.trim().isEmpty()) {
+					club=JOptionPane.showInputDialog("Por favor, el nombre del equipo");
+				}
 				nuevo.eliminarEquipo(club);
 				break;
-			//case 3:
-				//JOptionPane.showMessageDialog(null, "Salir");
-				//break;
+			case 3:
+				if (nuevo.getPartidos().size()>=1) {
+					JOptionPane.showMessageDialog(null, nuevo.getPartidos());
+				} else {
+					JOptionPane.showMessageDialog(null, "Todavia no hay partidos registrados");
+				}
+				
+				break;
+			case 4:
+				String[]fases = {
+						"Cuartos","Semifinal","Final"
+				};
+				String elegido = (String)JOptionPane.showInputDialog(null, "", "", 0, null, fases, fases[0]);
+				if (nuevo.getPartidos().isEmpty()) {
+					JOptionPane.showMessageDialog(null, "No se jugaron todas las fases");
+				} else {
+					for (Partido partido : nuevo.getPartidos()) {
+						if (partido.getFase().equals(elegido)) {
+							JOptionPane.showMessageDialog(null, partido);
+						}
+				}
+				}
+				break;
+			case 5:
+				JOptionPane.showMessageDialog(null, "Salir");
+				break;
 			default:
 				break;
 			}
 
-		} while (opcion != 3);
+		} while (opcion != 5);
 
 //			// 	Jugadores
 //        Jugador jugador1 = new Jugador("Jose", "Delantero", 9, 19);
